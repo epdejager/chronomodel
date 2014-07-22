@@ -339,6 +339,16 @@ module ChronoModel
       end
 
       delegate :timeline_associations, :to => :history
+
+      # Helper for clearing down a chrono model
+      def truncate_table
+        [Adapter::TEMPORAL_SCHEMA, Adapter::HISTORY_SCHEMA].each do |schema|
+          connection.on_schema(schema) do
+            connection.execute("TRUNCATE TABLE #{self.quoted_table_name}")
+          end
+        end
+        nil
+      end
     end
 
     module TimeQuery
