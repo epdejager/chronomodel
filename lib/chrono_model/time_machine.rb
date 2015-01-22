@@ -357,12 +357,9 @@ module ChronoModel
 
       # Helper for clearing down a chrono model
       def truncate_table
-        [Adapter::TEMPORAL_SCHEMA, Adapter::HISTORY_SCHEMA].each do |schema|
-          connection.on_schema(schema) do
-            connection.execute("TRUNCATE TABLE #{self.quoted_table_name}")
-          end
+        connection.on_schema(Adapter::TEMPORAL_SCHEMA) do
+          connection.execute("TRUNCATE TABLE #{self.quoted_table_name}")
         end
-        nil
       end
     end
 
