@@ -493,10 +493,13 @@ module ChronoModel
       end
 
       def type_cast(value)
+        return if value.nil? || value == 'empty'
+        return value if value.is_a?(::Range)
+
         extracted = extract_bounds(value)
 
-        from = Conversions.string_to_utc_time extracted[:from]
-        to   = Conversions.string_to_utc_time extracted[:to  ]
+        from = ActiveRecord::ConnectionAdapters::Column.string_to_time(extracted[:from])
+        to   = ActiveRecord::ConnectionAdapters::Column.string_to_time(extracted[:to])
 
         [from, to]
       end
