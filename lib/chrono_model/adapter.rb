@@ -545,7 +545,7 @@ module ChronoModel
       # Adds the above TSRange class to the PG Adapter OID::TYPE_MAP
       #
       def chrono_setup_type_map
-        OID::TYPE_MAP[3908] = TSRange.new
+        OID.register_type 'tsrange', TSRange.new
       end
 
       # Upgrades existing structure for each table, if required.
