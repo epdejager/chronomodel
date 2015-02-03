@@ -445,10 +445,10 @@ module ChronoModel
     # Returns true if the given name references a temporal table.
     #
     def is_chrono?(table)
-      TableCache.fetch(table) do
+      # TableCache.fetch(table) do
         _on_temporal_schema { table_exists?(table) } &&
         _on_history_schema { table_exists?(table) }
-      end
+      # end
 
     rescue ActiveRecord::StatementInvalid => e
       # means that we could not change the search path to check for
@@ -494,9 +494,6 @@ module ChronoModel
       end
 
       def type_cast(value)
-        return if value.nil? || value == 'empty'
-        return value if value.is_a?(::Range)
-
         extracted = extract_bounds(value)
 
         from = ActiveRecord::ConnectionAdapters::Column.string_to_time(extracted[:from])

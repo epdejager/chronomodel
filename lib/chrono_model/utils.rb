@@ -60,7 +60,8 @@ module ChronoModel
     # false otherwise.
     #
     def chrono?
-      connection.is_chrono?(table_name)
+      # connection.is_chrono?(table_name)
+      false
     end
   end
 

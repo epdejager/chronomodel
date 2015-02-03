@@ -186,6 +186,13 @@ module ChronoModel
       subclass.const_set :History, history
     end
 
+    # Returns true if this model is backed by a temporal table,
+    # false otherwise.
+    #
+    def chrono?
+      true
+    end
+
     # Returns a read-only representation of this record as it was +time+ ago.
     # Returns nil if no record is found.
     #
@@ -317,6 +324,14 @@ module ChronoModel
     end
 
     module ClassMethods
+
+      # Returns true if this model is backed by a temporal table,
+      # false otherwise.
+      #
+      def chrono?
+        true
+      end
+
       # Returns an ActiveRecord::Relation on the history of this model as
       # it was +time+ ago.
       def as_of(time)
