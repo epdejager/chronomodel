@@ -32,6 +32,7 @@ module ChronoModel
     def create_table(table_name, options = {})
       # No temporal features requested, skip
       return super unless options[:temporal]
+      chrono_setup!
 
       if options[:id] == false
         logger.warn "WARNING - Temporal Temporal tables require a primary key."
@@ -54,6 +55,7 @@ module ChronoModel
     #
     def rename_table(name, new_name)
       return super unless is_chrono?(name)
+      chrono_setup!
 
       clear_cache!
 
@@ -119,6 +121,7 @@ module ChronoModel
         block ||= proc { }
 
         if options[:temporal] == true
+          chrono_setup!
           if !is_chrono?(table_name)
             # Add temporal features to this table
             #
@@ -130,7 +133,6 @@ module ChronoModel
             _on_history_schema { chrono_create_history_for(table_name) }
             chrono_create_view_for(table_name, options)
             copy_indexes_to_history_for(table_name)
-
             TableCache.add! table_name
 
             # Optionally copy the plain table data, setting up history
@@ -188,6 +190,7 @@ module ChronoModel
     #
     def drop_table(table_name, *)
       return super unless is_chrono?(table_name)
+      chrono_setup!
 
       _on_temporal_schema { execute "DROP TABLE #{table_name} CASCADE" }
 

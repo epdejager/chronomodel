@@ -28,7 +28,7 @@ module ActiveRecord
           "Currently, only PostgreSQL >= 9.3 is supported."
       end
 
-      adapter.chrono_setup!
+      #adapter.chrono_setup!
 
       return adapter
     end
