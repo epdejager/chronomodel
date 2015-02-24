@@ -203,6 +203,7 @@ module ChronoModel
     #
     def add_index(table_name, column_name, options = {})
       return super unless is_chrono?(table_name)
+      chrono_setup!
 
       transaction do
         _on_temporal_schema { super }
@@ -219,6 +220,7 @@ module ChronoModel
     #
     def remove_index(table_name, *)
       return super unless is_chrono?(table_name)
+      chrono_setup!
 
       transaction do
         _on_temporal_schema { super }
@@ -231,6 +233,7 @@ module ChronoModel
     #
     def add_column(table_name, *)
       return super unless is_chrono?(table_name)
+      chrono_setup!
 
       transaction do
         # Add the column to the temporal table
@@ -246,6 +249,7 @@ module ChronoModel
     #
     def rename_column(table_name, *)
       return super unless is_chrono?(table_name)
+      chrono_setup!
 
       # Rename the column in the temporal table and in the view
       transaction do
@@ -263,6 +267,7 @@ module ChronoModel
     #
     def change_column(table_name, *)
       return super unless is_chrono?(table_name)
+      chrono_setup!
       chrono_alter(table_name) { super }
     end
 
@@ -270,6 +275,7 @@ module ChronoModel
     #
     def change_column_default(table_name, *)
       return super unless is_chrono?(table_name)
+      chrono_setup!
       _on_temporal_schema { super }
     end
 
@@ -277,6 +283,7 @@ module ChronoModel
     #
     def change_column_null(table_name, *)
       return super unless is_chrono?(table_name)
+      chrono_setup!
       _on_temporal_schema { super }
     end
 
@@ -286,6 +293,7 @@ module ChronoModel
     #
     def remove_column(table_name, *)
       return super unless is_chrono?(table_name)
+      chrono_setup!
       chrono_alter(table_name) { super }
     end
 
@@ -508,9 +516,13 @@ module ChronoModel
 
     def chrono_setup!
       chrono_create_schemas
-      chrono_setup_type_map
-
       chrono_upgrade_structure!
+    end
+
+    # Adds the above TSRange class to the PG Adapter OID::TYPE_MAP
+    #
+    def chrono_setup_type_map
+      OID.register_type 'tsrange', TSRange.new
     end
 
     # Copy the indexes from the temporal table to the history table if the indexes
@@ -544,12 +556,6 @@ module ChronoModel
         [TEMPORAL_SCHEMA, HISTORY_SCHEMA].each do |schema|
           execute "CREATE SCHEMA #{schema}" unless schema_exists?(schema)
         end
-      end
-
-      # Adds the above TSRange class to the PG Adapter OID::TYPE_MAP
-      #
-      def chrono_setup_type_map
-        OID.register_type 'tsrange', TSRange.new
       end
 
       # Upgrades existing structure for each table, if required.
