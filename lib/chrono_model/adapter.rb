@@ -18,6 +18,10 @@ module ChronoModel
     # This is the data type used for the SCD2 validity
     RANGE_TYPE = 'tsrange'
 
+    def initialize(*args)
+      chrono_setup_type_map
+      super
+    end
     # Returns true whether the connection adapter supports our
     # implementation of temporal tables. Currently, Chronomodel
     # is supported starting with PostgreSQL 9.3.
@@ -497,8 +501,8 @@ module ChronoModel
       def extract_bounds(value)
         from, to = value[1..-2].split(',')
         {
-          from:          (value[1] == ',' || from == '-infinity') ? nil : from[1..-2],
-          to:            (value[-2] == ',' || to == 'infinity') ? nil : to[1..-2],
+          from:          (value[1] == ',' || from == '-infinity' || from.nil?) ? nil : from[1..-2],
+          to:            (value[-2] == ',' || to == 'infinity' || to.nil?) ? nil : to[1..-2],
           #exclude_start: (value[0] == '('),
           #exclude_end:   (value[-1] == ')')
         }
